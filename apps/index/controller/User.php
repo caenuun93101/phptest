@@ -1,5 +1,7 @@
 <?php
 namespace app\index\controller;
+use think\Db;
+use think\Request;
 
 class User
 {
@@ -9,9 +11,10 @@ class User
 		return ['code'=>0,'result'=>'error'];
     }
 
-    public function login()
+    public function login(Request $request)
     {
-    	$data = ['name'=>'crow','sex'=>'男'];
-    	return ['code'=>1,'result'=>$data];
+        echo($request->get('name'));
+    	// $data = ['name'=>'crow','sex'=>'男'];
+    	// return ['code'=>1,'result'=>$data];
     }
 }

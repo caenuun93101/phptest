@@ -18,6 +18,7 @@ class Index
 		// 			->selet();
 		// dump($list);
 		echo($request->get('name'));
+		// echo "hello world";
 
     }
 }
