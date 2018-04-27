@@ -36,11 +36,29 @@ class Order
         $order->starttime = $starttime;
         $order->peoplenum = $peoplenum;
         $order->city = $city;
+        $order->status = 00;
         if ($order->save()) {
              return ['code'=>1, 'result'=>'注册成功'];
         }else
         {
             return ['code'=>0, 'result'=>'注册失败'];
         }
+    }
+
+    public function nearBy(Request $request)
+    {
+        $userid = $request->post('userid');
+        $city = $request->post('city');
+        $list = OrderModel::all(['city'=>$city]);
+        $array = array();
+        foreach ($list as $order) {
+            if (!strcmp($userid, $order->userid)) {
+                array_push($array, $order);
+            }
+        }
+        if (count($array) == 0) {
+            return ['code'=>0, result=>0];
+        }
+        return ['code'=>1, result=>$array];
     }
 }
