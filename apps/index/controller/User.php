@@ -73,7 +73,7 @@ class User
             return ['code'=>0, 'result'=>'手机号或者密码错误'];
         }else
         {
-             return ['code'=>1, 'result'=>'登陆成功'];
+             return ['code'=>1, 'result'=>(string)$user->userid];
         }
     }
 
