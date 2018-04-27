@@ -52,13 +52,14 @@ class Order
         $list = OrderModel::all(['city'=>$city]);
         $array = array();
         foreach ($list as $order) {
-            if (!strcmp($userid, $order->userid)) {
-                array_push($array, $order);
-            }
+            //if (!strcmp($userid, $order->userid)) {
+                //array_push($array, $order);
+            //}
+            $array[]=$order;
         }
         if (count($array) == 0) {
-            return ['code'=>0, result=>0];
+            return ['code'=>0, 'result'=>dump($list)];
         }
-        return ['code'=>1, result=>$array];
+        return ['code'=>1, 'result'=>$array];
     }
 }
