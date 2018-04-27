@@ -9,12 +9,12 @@ class User
     public function index()
     {
 
-        echo "11111";
+        return ['message'=>'hello world'];
     }
 
     public function getCode(Request $request)
     {
-        $phoneNumber = $request->get('phonenum');
+        $phoneNumber = $request->post('phonenum');
         $g = "/13[12356789]{1}\d{8}|15[1235689]\d{8}|188\d{8}/"; 
         if(preg_match($g,$phoneNumber))
         {
@@ -24,7 +24,7 @@ class User
             }
             else
             {
-                return ['code'=>0, 'result'=>'手机号码已存在'];
+                return ['code'=>2, 'result'=>'手机号码已存在'];
             }
             
         }else
@@ -35,9 +35,9 @@ class User
 
     public function checkCode(Request $request)
     {
-        $phoneCode = $request->get('phoneCode');
+        $phoneCode = $request->post('phoneCode');
         if (strcmp($phoneCode, '1234')) {
-            return ['code'=>0, 'result'=>'验证码错误'];
+            return ['code'=>0, 'result'=>$phoneCode];
         }else
         {
             return ['code'=>1, 'result'=>'ok'];
@@ -46,8 +46,8 @@ class User
 
     public function register(Request $request)
     {
-        $phoneNumber = $request->get('phonenum');
-        $password = $request->get('password');
+        $phoneNumber = $request->post('phonenum');
+        $password = $request->post('password');
         $user = new UserModel;
         $user->phonenum = $phoneNumber;
         $user->password = $password;
@@ -63,10 +63,13 @@ class User
     public function login(Request $request)
     {
         //echo($request->get('phonenum'));
-        $phoneNumber = $request->get('phonenum');
-        $password = $request->get('password');
+        $phoneNumber = $request->post('phonenum');
+        $password = $request->post('password');
         $user = UserModel::get(['phonenum'=>$phoneNumber]);
-        if (strcmp($user->password, $password)) {
+        if ($user == NULL) {
+            return ['code'=>0, 'result'=>'手机号或者密码错误'];
+        }
+        else if (strcmp($user->password, $password)) {
             return ['code'=>0, 'result'=>'手机号或者密码错误'];
         }else
         {
@@ -76,8 +79,8 @@ class User
 
     public function changeUserName(Request $request)
     {
-        $phoneNumber = $request->get('phonenum');
-        $userName = $request->get('username');
+        $phoneNumber = $request->post('phonenum');
+        $userName = $request->post('username');
         $user = UserModel::get(['phonenum'=>$phoneNumber]);
         $user->username = $userName;
        if ($user->save()) {
@@ -90,8 +93,8 @@ class User
 
     public function changePassword(Request $request)
     {
-        $phoneNumber = $request->get('phonenum');
-        $password = $request->get('password');
+        $phoneNumber = $request->post('phonenum');
+        $password = $request->post('password');
         $user = UserModel::get(['phonenum'=>$phoneNumber]);
         $user->password = $password;
        if ($user->save()) {
@@ -104,8 +107,8 @@ class User
 
     public function changeSex(Request $request)
     {
-        $phoneNumber = $request->get('phonenum');
-        $sex = $request->get('sex');
+        $phoneNumber = $request->post('phonenum');
+        $sex = $request->post('sex');
         $user = UserModel::get(['phonenum'=>$phoneNumber]);
         $user->sex = $sex;
        if ($user->save()) {
@@ -118,15 +121,45 @@ class User
 
     public function changeAge(Request $request)
     {
-        $phoneNumber = $request->get('phonenum');
-        $age = $request->get('age');
+        $phoneNumber = $request->post('phonenum');
+        $age = $request->post('age');
         $user = UserModel::get(['phonenum'=>$phoneNumber]);
-        $user->age = $age;
+        $user->age = intval($age);
        if ($user->save()) {
              return ['code'=>1, 'result'=>'修改成功'];
         }else
         {
             return ['code'=>0, 'result'=>'修改失败'];
         }
+    }
+
+    public function changeScore(Request $request)
+    {
+        $phoneNumber = $request->post('phonenum');
+        $newScore = $request->post('score');
+        $user = UserModel::get(['phonenum'=>$phoneNumber]);
+        $times = $user->times;
+        $score = $user->score;
+        $user->times++;
+        $user->score  = round(($times * $score + $newScore) / ($times + 1),2);
+       if ($user->save()) {
+             return ['code'=>1, 'result'=>'修改成功'];
+        }else
+        {
+            return ['code'=>0, 'result'=>'修改失败'];
+        }
+    }
+
+    public function getUserInfo(Request $request)
+    {
+        $phoneNumber = $request->post('phonenum');
+        $user = UserModel::get(['phonenum'=>$phoneNumber]);
+        if ($user != NULL) {
+            return ['code'=>1, 'result'=>$user];
+        }else
+        {
+            return ['code'=>0, 'result'=>'error'];
+        }
+        
     }
 }
